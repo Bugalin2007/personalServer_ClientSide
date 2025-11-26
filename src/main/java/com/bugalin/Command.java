@@ -1,7 +1,8 @@
 package com.bugalin;
 
 public enum Command {
-    QUIT_PROGRAM("quit",new String[]{"exit","q"},0);
+    QUIT_PROGRAM("quit",new String[]{"exit","q"},0),
+    TEST("test",new String[0],1);
 
     private final String name;
     private final String[] aliases;
@@ -19,7 +20,7 @@ public enum Command {
                 return command;
             }
         }
-        String[] aliases = null;
+        String[] aliases;
         for (Command command : Command.values()) {
             aliases = command.aliases;
             for (String alias : aliases) {

@@ -3,6 +3,11 @@ package com.bugalin;
 import java.util.Arrays;
 
 public class CommandHandler {
+    private final SSHManager sshManager;
+    public CommandHandler(SSHManager sshManager) {
+        this.sshManager = sshManager;
+    }
+
     public int execute(String input) {
         String[] args = input.split(" ");
         String commandName = args[0].toLowerCase();
@@ -21,6 +26,14 @@ public class CommandHandler {
         switch (command) {
             case QUIT_PROGRAM -> {
                 return -1;
+            }
+            case TEST -> {
+                if(args[0].equals("exec")) {
+                    sshManager.ChannelExec();
+                }else if(args[0].equals("sftp")) {
+                    sshManager.ChannelSftp();
+                }
+                return 0;
             }
             default -> {
                 return 0;

@@ -1,0 +1,9 @@
+{
+  "sshData": {
+    "host": "10.129.240.97",
+    "username": "ubuntu",
+    "port": 22,
+    "privateKeyPath": "C:/Users/19364/.ssh/keyBugalin.pem",
+    "knownHostsPath": "C:/Users/19364/.ssh/known_hosts"
+  }
+}
