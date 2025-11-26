@@ -11,7 +11,6 @@ public class SSHManager {
     private String privateKeyPath;
     private String knownHostsPath;
     private int status; // -1 = Not yet initialized, 0 = Disconnected, 1 = Connected
-    private JSch jsch;
     private Session session;
 
     public SSHManager(String host, String username, int port, String privateKeyPath, String knownHostsPath) {
@@ -68,7 +67,7 @@ public class SSHManager {
 
     public void initialize(){
         try {
-            this.jsch = new JSch();
+            JSch jsch = new JSch();
             jsch.addIdentity(privateKeyPath);
             jsch.setKnownHosts(knownHostsPath);
             this.session = jsch.getSession(username,host,port);
