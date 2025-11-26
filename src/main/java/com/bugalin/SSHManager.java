@@ -5,68 +5,89 @@ import com.jcraft.jsch.*;
 import java.io.InputStream;
 
 public class SSHManager {
-    public static void main(String[] args) {
-        String host = "10.129.240.97";
-        String username = "ubuntu";
-        int port = 22;
-        String privateKeyPath = "C:/Users/19364/.ssh/keyBugalin.pem";
-        String knownHostsPath = "C:/Users/19364/.ssh/known_hosts";
+    private String host;
+    private String username;
+    private int port;
+    private String privateKeyPath;
+    private String knownHostsPath;
+    private int status; // -1 = Not yet initialized, 0 = Disconnected, 1 = Connected
+    private JSch jsch;
+    private Session session;
 
+    public SSHManager(String host, String username, int port, String privateKeyPath, String knownHostsPath) {
+        this.host = host;
+        this.username = username;
+        this.port = port;
+        this.privateKeyPath = privateKeyPath;
+        this.knownHostsPath = knownHostsPath;
+        this.status = -1;
+    }
+
+    public SSHManager() {
+        this.host = "10.129.240.97";
+        this.username = "ubuntu";
+        this.port = 22;
+        this.privateKeyPath = "C:/Users/19364/.ssh/keyBugalin.pem";
+        this.knownHostsPath = "C:/Users/19364/.ssh/known_hosts";
+        this.status = -1;
+    }
+
+    public void setHost(String host) {
+        if (status == 1){return;}
+        this.host = host;
+    }
+
+    public void setUsername(String username) {
+        if (status == 1){return;}
+        this.username = username;
+    }
+
+    public void setPort(int port) {
+        if (status == 1){return;}
+        this.port = port;
+    }
+
+    public void setPrivateKeyPath(String privateKeyPath) {
+        if (status == 1){return;}
+        this.privateKeyPath = privateKeyPath;
+    }
+
+    public void setKnownHostsPath(String knownHostsPath) {
+        if (status == 1){return;}
+        this.knownHostsPath = knownHostsPath;
+    }
+
+    public int getStatus() {
+        return this.status;
+    }
+
+    public void initialize(){
         try {
-            JSch jsch = new JSch();
+            this.jsch = new JSch();
             jsch.addIdentity(privateKeyPath);
             jsch.setKnownHosts(knownHostsPath);
-            Session session = jsch.getSession(username, host, port);
-
-            session.connect();
-            System.out.println("Connected to " + host);
-
-            // Execute a command
-            String command = "ls -l";
-            String result = executeCommand(session, command);
-            System.out.println("Command output:\n" + result);
-
-            session.disconnect();
+            this.session = jsch.getSession(host,username,port);
+            this.status = 0;
         } catch (JSchException e) {
             e.printStackTrace();
         }
     }
 
-    private static String executeCommand(Session session, String command) {
-        StringBuilder output = new StringBuilder();
+    public void connect(){
         try {
-            ChannelExec channel = (ChannelExec) session.openChannel("exec");
-            channel.setCommand(command);
-            channel.setInputStream(null);
-
-            InputStream in = channel.getInputStream();
-            InputStream err = channel.getErrStream();
-            channel.connect();
-
-            byte[] tmp = new byte[1024];
-            while (true) {
-                while (in.available() > 0) {
-                    int i = in.read(tmp, 0, 1024);
-                    if (i < 0) break;
-                    output.append(new String(tmp, 0, i));
-                }
-                if (channel.isClosed()) {
-                    if (in.available() > 0) continue;
-                    break;
-                }
-                Thread.sleep(100);
-            }
-
-            while (err.available() > 0) {
-                int i = err.read(tmp, 0, 1024);
-                if (i < 0) break;
-                output.append("ERROR: ").append(new String(tmp, 0, i));
-            }
-
-            channel.disconnect();
-        } catch (Exception e) {
+            session.connect();
+            this.status = 1;
+        } catch (JSchException e) {
             e.printStackTrace();
         }
-        return output.toString();
+    }
+
+    public void disconnect(){
+        try {
+            session.disconnect();
+            this.status = 0;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }
