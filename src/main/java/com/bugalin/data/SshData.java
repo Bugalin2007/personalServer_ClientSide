@@ -1,19 +1,6 @@
-package com.bugalin;
+package com.bugalin.data;
 
-public class JObjectConfig {
-    private SshData sshData;
-
-    public JObjectConfig(){}
-
-    public SshData getSshData() {
-        return sshData;
-    }
-    public void setSshData(SshData sshData) {
-        this.sshData = sshData;
-    }
-}
-
-class SshData {
+public class SshData {
     private String host;
     private String username;
     private int port;

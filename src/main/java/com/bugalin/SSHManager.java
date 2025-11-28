@@ -1,5 +1,6 @@
 package com.bugalin;
 
+import com.bugalin.data.SshData;
 import com.jcraft.jsch.*;
 
 import java.io.InputStream;
@@ -13,50 +14,69 @@ public class SSHManager {
     private int status; // -1 = Not yet initialized, 0 = Disconnected, 1 = Connected
     private Session session;
 
-    public SSHManager(String host, String username, int port, String privateKeyPath, String knownHostsPath) {
-        this.host = host;
-        this.username = username;
-        this.port = port;
-        this.privateKeyPath = privateKeyPath;
-        this.knownHostsPath = knownHostsPath;
+    public SSHManager(SshData sshData) {
+        this.host = sshData.getHost();
+        this.username = sshData.getUsername();
+        this.port = sshData.getPort();
+        this.privateKeyPath = sshData.getPrivateKeyPath();
+        this.knownHostsPath = sshData.getKnownHostsPath();
         this.status = -1;
     }
 
-    public SSHManager() {
-        this.host = "10.129.240.97";
-        this.username = "ubuntu";
-        this.port = 22;
-        this.privateKeyPath = "C:/Users/19364/.ssh/keyBugalin.pem";
-        this.knownHostsPath = "C:/Users/19364/.ssh/known_hosts";
+    public void setData(SshData sshData) {
+        if (status == 1){
+            System.out.println("[SSH Connection] Existing active session, data modify is forbidden.");
+            return;
+        }
+        this.host = sshData.getHost();
+        this.username = sshData.getUsername();
+        this.port = sshData.getPort();
+        this.privateKeyPath = sshData.getPrivateKeyPath();
+        this.knownHostsPath = sshData.getKnownHostsPath();
         this.status = -1;
     }
 
     public void setHost(String host) {
-        if (status == 1){return;}
+        if (status == 1){
+            System.out.println("[SSH Connection] Existing active session, data modify is forbidden.");
+            return;
+        }
         this.host = host;
         status = -1;
     }
 
     public void setUsername(String username) {
-        if (status == 1){return;}
+        if (status == 1){
+            System.out.println("[SSH Connection] Existing active session, data modify is forbidden.");
+            return;
+        }
         this.username = username;
         status = -1;
     }
 
     public void setPort(int port) {
-        if (status == 1){return;}
+        if (status == 1){
+            System.out.println("[SSH Connection] Existing active session, data modify is forbidden.");
+            return;
+        }
         this.port = port;
         status = -1;
     }
 
     public void setPrivateKeyPath(String privateKeyPath) {
-        if (status == 1){return;}
+        if (status == 1){
+            System.out.println("[SSH Connection] Existing active session, data modify is forbidden.");
+            return;
+        }
         this.privateKeyPath = privateKeyPath;
         status = -1;
     }
 
     public void setKnownHostsPath(String knownHostsPath) {
-        if (status == 1){return;}
+        if (status == 1){
+            System.out.println("[SSH Connection] Existing active session, data modify is forbidden.");
+            return;
+        }
         this.knownHostsPath = knownHostsPath;
         status = -1;
     }
@@ -65,7 +85,23 @@ public class SSHManager {
         return this.status;
     }
 
+    public String getStatus(boolean isNumber){
+        if (isNumber){
+            return String.valueOf(getStatus());
+        }
+        switch (this.status){
+            case 0 -> {return "[SSH Connection] Session is currently disconnected";}
+            case 1 -> {return "[SSH Connection] Session is currently connected. ";}
+            case -1 -> {return "[SSH Connection] Session not exist. Initialization required. ";}
+            default -> {return "[SSH Connection] Unknown session status";}
+        }
+    }
+
     public void initialize(){
+        if (status == 1){
+            System.out.println("[SSH Connection] Existing active session, initialization is forbidden.");
+            return;
+        }
         try {
             JSch jsch = new JSch();
             jsch.addIdentity(privateKeyPath);
@@ -79,7 +115,10 @@ public class SSHManager {
     }
 
     public void connect(){
-        if (status != 0){return;}
+        if (status != 0){
+            System.out.println("[SSH Connection] Cannot perform session connect.");
+            return;
+        }
         try {
             session.connect();
             this.status = 1;
@@ -90,7 +129,10 @@ public class SSHManager {
     }
 
     public void disconnect(){
-        if (status != 1){return;}
+        if (status != 1){
+            System.out.println("[SSH Connection] Cannot perform session disconnect.");
+            return;
+        }
         try {
             session.disconnect();
             this.status = 0;
@@ -159,6 +201,6 @@ public class SSHManager {
                 channel.disconnect();
             }
         }
-        System.out.println(output.toString());
+        System.out.println(output);
     }
 }
