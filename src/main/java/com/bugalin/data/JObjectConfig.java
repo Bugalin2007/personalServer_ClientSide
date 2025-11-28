@@ -18,11 +18,11 @@ public class JObjectConfig {
     public static JObjectConfig defaultConfig(){
         JObjectConfig jObjectConfig = new JObjectConfig();
         SshData sshData = new SshData();
-        sshData.setHost("10.129.240.97");
-        sshData.setUsername("ubuntu");
-        sshData.setPort(22);
-        sshData.setPrivateKeyPath("C:/Users/19364/.ssh/keyBugalin.pem");
-        sshData.setKnownHostsPath("C:/Users/19364/.ssh/known_hosts");
+        sshData.setHost("127.0.0.1");
+        sshData.setUsername("linux");
+        sshData.setPort(0);
+        sshData.setPrivateKeyPath("C:/Users/username/.ssh/key.pem");
+        sshData.setKnownHostsPath("C:/Users/username/.ssh/known_hosts");
         jObjectConfig.setSshData(sshData);
         return jObjectConfig;
     }
