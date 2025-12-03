@@ -1,13 +1,13 @@
 package com.bugalin.data;
 
-public class SshData {
+public class SshManagerData {
     private String host;
     private String username;
     private int port;
     private String privateKeyPath;
     private String knownHostsPath;
 
-    public SshData(){}
+    public SshManagerData(){}
 
     public String getHost() {
         return host;

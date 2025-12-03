@@ -1,7 +1,7 @@
 package com.bugalin;
 
 
-import com.bugalin.data.SshData;
+import com.bugalin.data.SshManagerData;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -25,37 +25,11 @@ public class CommandHandler {
                 return commandConfig(args);
             }
             case SSH_CONNECTION -> {
-                switch (args[0]) {
-                    case "status" -> {
-                        System.out.println(sshManager.getStatus(false));
-                    }
-                    case "connect" -> {
-                        sshManager.connect();
-                    }
-                    case "disconnect" -> {
-                        sshManager.disconnect();
-                    }
-                    case "ping", "pingip" -> {
-                        Socket socket = new Socket();
-                        SshData sshData = configHandler.getConfig().getSshData();
-                        try {
-                            socket.connect(new java.net.InetSocketAddress(sshData.getHost(), sshData.getPort()), 3000);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                            System.out.println("[SSH Connection] Ping failed at " + sshData.getHost() + ":" + sshData.getPort());
-                        }
-                        System.out.println("[SSH Connection] Ping succeed at " + sshData.getHost() + ":" + sshData.getPort());
-                    }
-                    case "reload" -> {
-                        sshManager.setData(configHandler.getConfig().getSshData());
-                        sshManager.initialize();
-                    }
-                    default -> {return reject();}
-                }
+                return commandSshCon(args);
             }
             case TEST -> {
                 if(args[0].equals("exec")) {
-                    sshManager.ChannelExec();
+                    sshManager.ChannelExec(null);
                 }else if(args[0].equals("sftp")) {
                     sshManager.ChannelSftp();
                 }
@@ -64,51 +38,91 @@ public class CommandHandler {
         return 0;
     }
 
+    private int commandSshCon(String[] args) {
+        switch (args[0]) {
+            case "status" -> {
+                System.out.println(sshManager.getStatus(false));
+                return 0;
+            }
+            case "connect" -> {
+                return sshManager.connect();
+            }
+            case "disconnect" -> {
+                return sshManager.disconnect();
+            }
+            case "ping", "pingip" -> {
+                Socket socket = new Socket();
+                SshManagerData sshManagerData = configHandler.getConfig().getSshData();
+                try {
+                    socket.connect(new java.net.InetSocketAddress(sshManagerData.getHost(), sshManagerData.getPort()), 3000);
+                    System.out.println("[SSH Connection] Ping succeed at " + sshManagerData.getHost() + ":" + sshManagerData.getPort());
+                    return 0;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    System.out.println("[SSH Connection] Ping failed at " + sshManagerData.getHost() + ":" + sshManagerData.getPort());
+                    return 2;
+                }
+            }
+            case "reload" -> {
+                sshManager.setData(configHandler.getConfig().getSshData());
+                return sshManager.initialize();
+            }
+            default -> {
+                return reject();
+            }
+        }
+    }
+
     private int commandConfig(String[] args) {
-        SshData sshData = configHandler.getConfig().getSshData();
-        if (args[0].equals("query")){
-            String message;
-            switch (args[1]) {
-                case "host" -> message = "[Config] Current host is " + sshData.getHost();
-                case "username" -> message = "[Config] Current username is " + sshData.getUsername();
-                case "port" -> message = "[Config] Current port is " + sshData.getPort();
-                case "privateKeyPath" -> message = "[Config] Private key path is " + sshData.getPrivateKeyPath();
-                case "knownHostsPath" -> message = "[Config] Known hosts path is " + sshData.getKnownHostsPath();
-                default -> message = " [Config] Current SSH parameters: \n |  host : " + sshData.getHost()
-                                     + "\n |  username : " + sshData.getUsername()
-                                     + "\n |  port : " + sshData.getPort()
-                                     + "\n |  privateKeyPath : " + sshData.getPrivateKeyPath()
-                                     + "\n |  knownHostsPath : " + sshData.getKnownHostsPath();
-            }
-            System.out.println(message);
-        }else if (args[0].equals("modify")) {
-            System.out.print("[Config] Enter new value for the parameter\n> ");
-            String newValue = scanner.next();
-            switch (args[1]){
-                case "host" -> sshData.setHost(newValue);
-                case "username" -> sshData.setUsername(newValue);
-                case "port" -> sshData.setPort(Integer.parseInt(newValue));
-                case "privateKeyPath" -> sshData.setPrivateKeyPath(newValue);
-                case "knownHostsPath" -> sshData.setKnownHostsPath(newValue);
-                default -> {
-                    return reject("[ERROR] Config parameter not found!");
+        SshManagerData sshManagerData = configHandler.getConfig().getSshData();
+        switch (args[0]) {
+            case "query" -> {
+                String message;
+                switch (args[1]) {
+                    case "host" -> message = "[Config] Current host is " + sshManagerData.getHost();
+                    case "username" -> message = "[Config] Current username is " + sshManagerData.getUsername();
+                    case "port" -> message = "[Config] Current port is " + sshManagerData.getPort();
+                    case "privateKeyPath" -> message = "[Config] Private key path is " + sshManagerData.getPrivateKeyPath();
+                    case "knownHostsPath" -> message = "[Config] Known hosts path is " + sshManagerData.getKnownHostsPath();
+                    default -> message = " [Config] Current SSH parameters: \n |  host : " + sshManagerData.getHost()
+                                         + "\n |  username : " + sshManagerData.getUsername()
+                                         + "\n |  port : " + sshManagerData.getPort()
+                                         + "\n |  privateKeyPath : " + sshManagerData.getPrivateKeyPath()
+                                         + "\n |  knownHostsPath : " + sshManagerData.getKnownHostsPath();
                 }
+                System.out.println(message);
             }
-            System.out.println("[Config] Parameter changed successfully!");
-        }else if (args[0].equals("reset")) {
-            switch (args[1]) {
-                case "host" -> sshData.setHost("10.129.240.97");
-                case "username" -> sshData.setUsername("ubuntu");
-                case "port" -> sshData.setPort(22);
-                case "privateKeyPath" -> sshData.setPrivateKeyPath("C:/Users/19364/.ssh/keyBugalin.pem");
-                case "knownHostsPath" -> sshData.setKnownHostsPath("C:/Users/19364/.ssh/known_hosts");
-                default -> {
-                    return reject("[ERROR] Config parameter not found!");
+            case "modify" -> {
+                System.out.print("[Config] Enter new value for the parameter\n> ");
+                String newValue = scanner.next();
+                switch (args[1]) {
+                    case "host" -> sshManagerData.setHost(newValue);
+                    case "username" -> sshManagerData.setUsername(newValue);
+                    case "port" -> sshManagerData.setPort(Integer.parseInt(newValue));
+                    case "privateKeyPath" -> sshManagerData.setPrivateKeyPath(newValue);
+                    case "knownHostsPath" -> sshManagerData.setKnownHostsPath(newValue);
+                    default -> {
+                        return reject("[ERROR] Config parameter not found!");
+                    }
                 }
+                System.out.println("[Config] Parameter changed successfully!");
             }
-            System.out.println("[Config] Parameter reset successfully!");
-        }else {
-            return reject();
+            case "reset" -> {
+                switch (args[1]) {
+                    case "host" -> sshManagerData.setHost("10.129.240.97");
+                    case "username" -> sshManagerData.setUsername("ubuntu");
+                    case "port" -> sshManagerData.setPort(22);
+                    case "privateKeyPath" -> sshManagerData.setPrivateKeyPath("C:/Users/19364/.ssh/keyBugalin.pem");
+                    case "knownHostsPath" -> sshManagerData.setKnownHostsPath("C:/Users/19364/.ssh/known_hosts");
+                    default -> {
+                        return reject("[ERROR] Config parameter not found!");
+                    }
+                }
+                System.out.println("[Config] Parameter reset successfully!");
+            }
+            default -> {
+                return reject();
+            }
         }
         return 0;
     }

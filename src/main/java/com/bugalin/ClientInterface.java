@@ -45,6 +45,7 @@ public class ClientInterface {
     private static void runtime() {
         String commandText;
         while(true){
+            System.out.print("> ");
             commandText = scanner.nextLine();
             int status = 1;
             String[] args = commandText.split(" ");

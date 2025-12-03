@@ -1,6 +1,6 @@
 package com.bugalin;
 
-import com.bugalin.data.JObjectConfig;
+import com.bugalin.data.Config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
@@ -9,7 +9,7 @@ import java.io.IOException;
 
 public class ConfigHandler {
     private static final ObjectMapper objectMapper = new ObjectMapper();
-    private JObjectConfig jObjectConfig;
+    private Config jObjectConfig;
 
     static {
         objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
@@ -20,11 +20,11 @@ public class ConfigHandler {
         if (!file.exists()) {
             file.createNewFile();
             System.out.println("[ERROR] Config file not found during loading, creating default config file.");
-            this.jObjectConfig = JObjectConfig.defaultConfig();
+            this.jObjectConfig = Config.defaultConfig();
             objectMapper.writeValue(file, this.jObjectConfig);
             return;
         }
-        this.jObjectConfig = objectMapper.readValue(file, JObjectConfig.class);
+        this.jObjectConfig = objectMapper.readValue(file, Config.class);
         System.out.println("[Config] Config file loaded successfully.");
     }
 
@@ -38,11 +38,11 @@ public class ConfigHandler {
         System.out.println("[Config] Config file saved successfully.");
     }
 
-    public JObjectConfig getConfig() {
+    public Config getConfig() {
         return this.jObjectConfig;
     }
 
-    public  void setConfig(JObjectConfig jObjectConfig) {
+    public void setConfig(Config jObjectConfig) {
         this.jObjectConfig = jObjectConfig;
     }
 }

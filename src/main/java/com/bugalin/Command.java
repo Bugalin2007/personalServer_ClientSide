@@ -1,10 +1,11 @@
 package com.bugalin;
 
 public enum Command {
-    QUIT_PROGRAM("quitProgram",new String[]{"exit","q","quit"},0),
+    QUIT_PROGRAM("q",new String[]{"exit","q","quit","quitProgram"},0),
     TEST("test",new String[0],1),
     CONFIG("config",new String[]{"cfg"},2),
-    SSH_CONNECTION("sshConnection",new String[]{"ssh","sshcon","connection","network"},1),;
+    SSH_CONNECTION("ssh",new String[]{"sshConnection","sshcon","connection","network"},1),
+    FINDER("finder",new String[]{"fnd","files",},2);
 
     private final String name;
     private final String[] aliases;
