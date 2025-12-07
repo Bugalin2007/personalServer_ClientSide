@@ -1,7 +1,8 @@
 package com.bugalin;
 
-import com.bugalin.data.ExecResult;
-import com.bugalin.data.SshManagerData;
+import com.bugalin.command.data.ExitStatus;
+import com.bugalin.command.data.ExecResult;
+import com.bugalin.command.data.SshManagerData;
 import com.jcraft.jsch.*;
 
 import java.io.InputStream;
@@ -26,7 +27,6 @@ public class SSHManager {
 
     public void setData(SshManagerData sshManagerData) {
         if (status == 1){
-            System.out.println("[SSH Connection] Existing active session, data modify is forbidden.");
             return;
         }
         this.host = sshManagerData.getHost();
@@ -35,51 +35,6 @@ public class SSHManager {
         this.privateKeyPath = sshManagerData.getPrivateKeyPath();
         this.knownHostsPath = sshManagerData.getKnownHostsPath();
         this.status = -1;
-    }
-
-    public void setHost(String host) {
-        if (status == 1){
-            System.out.println("[SSH Connection] Existing active session, data modify is forbidden.");
-            return;
-        }
-        this.host = host;
-        status = -1;
-    }
-
-    public void setUsername(String username) {
-        if (status == 1){
-            System.out.println("[SSH Connection] Existing active session, data modify is forbidden.");
-            return;
-        }
-        this.username = username;
-        status = -1;
-    }
-
-    public void setPort(int port) {
-        if (status == 1){
-            System.out.println("[SSH Connection] Existing active session, data modify is forbidden.");
-            return;
-        }
-        this.port = port;
-        status = -1;
-    }
-
-    public void setPrivateKeyPath(String privateKeyPath) {
-        if (status == 1){
-            System.out.println("[SSH Connection] Existing active session, data modify is forbidden.");
-            return;
-        }
-        this.privateKeyPath = privateKeyPath;
-        status = -1;
-    }
-
-    public void setKnownHostsPath(String knownHostsPath) {
-        if (status == 1){
-            System.out.println("[SSH Connection] Existing active session, data modify is forbidden.");
-            return;
-        }
-        this.knownHostsPath = knownHostsPath;
-        status = -1;
     }
 
     public int getStatus() {
@@ -100,7 +55,6 @@ public class SSHManager {
 
     public int initialize(){
         if (status == 1){
-            System.out.println("[SSH Connection] Existing active session, initialization is forbidden.");
             return 1;
         }
         try {
@@ -109,7 +63,6 @@ public class SSHManager {
             jsch.setKnownHosts(knownHostsPath);
             this.session = jsch.getSession(username,host,port);
             this.status = 0;
-            System.out.println("[SSH Connection] Initialized");
             return 0;
         } catch (JSchException e) {
             e.printStackTrace();
@@ -119,13 +72,11 @@ public class SSHManager {
 
     public int connect(){
         if (status != 0){
-            System.out.println("[SSH Connection] Cannot perform session connect.");
             return 1;
         }
         try {
             session.connect();
             this.status = 1;
-            System.out.println("[SSH Connection] Session Connected");
             return 0;
         } catch (JSchException e) {
             e.printStackTrace();
@@ -135,13 +86,11 @@ public class SSHManager {
 
     public int disconnect(){
         if (status != 1){
-            System.out.println("[SSH Connection] Cannot perform session disconnect.");
             return 1;
         }
         try {
             session.disconnect();
             this.status = 0;
-            System.out.println("[SSH Connection] Session Disconnected");
             return 0;
         }catch (Exception e){
             e.printStackTrace();
@@ -165,7 +114,7 @@ public class SSHManager {
     }
 
     public ExecResult ChannelExec(String command){
-        if (status != 1){return new ExecResult(-1,"","There is no active session.");}
+        if (status != 1){return new ExecResult(ExitStatus.UNKNOWN_ERROR,"There is no active session.");}
         ChannelExec channel = null;
         StringBuilder output = new StringBuilder();
         StringBuilder error = new StringBuilder();
@@ -200,7 +149,7 @@ public class SSHManager {
                 error.append("ERROR: ").append(new String(buffer, 0, bytesRead));
             }
 
-            return new ExecResult(channel.getExitStatus(), output.toString(), error.toString());
+            return new ExecResult(channel.getExitStatus(), output.toString()+error.toString());
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -209,6 +158,6 @@ public class SSHManager {
                 channel.disconnect();
             }
         }
-        return new ExecResult(-1,"","Unknown Error");
+        return new ExecResult(ExitStatus.UNKNOWN_ERROR,"Unknown Error");
     }
 }

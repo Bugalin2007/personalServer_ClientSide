@@ -1,4 +1,4 @@
-package com.bugalin.data;
+package com.bugalin.command.data;
 
 public class SshManagerData {
     private String host;

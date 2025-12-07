@@ -1,39 +1,9 @@
-package com.bugalin;
-
-
-import com.bugalin.data.SshManagerData;
-
-import java.io.IOException;
-import java.net.Socket;
-import java.util.Scanner;
-
-public class CommandHandler {
-    private final SSHManager sshManager;
-    private static final Scanner scanner = new Scanner(System.in);
-    private final ConfigHandler configHandler;
-    public CommandHandler(SSHManager sshManager, ConfigHandler configHandler) {
-        this.sshManager = sshManager;
-        this.configHandler = configHandler;
-    }
-
-    public int execute(Command command,String[] args) {
-        switch (command) {
-            case QUIT_PROGRAM -> {
-                return -1;
-            }
-            case CONFIG -> {
-                return commandConfig(args);
-            }
-            case SSH_CONNECTION -> {
-                return commandSshCon(args);
-            }
-            case TEST -> {
-                if(args[0].equals("exec")) {
-                    sshManager.ChannelExec(null);
-                }else if(args[0].equals("sftp")) {
-                    sshManager.ChannelSftp();
-                }
-            }
+/*
+    private int commandFinder(String[] args) {
+        switch(args[0]) {
+            case "open" -> {}
+            case "peek" -> {}
+            case "current" -> {}
         }
         return 0;
     }
@@ -119,6 +89,7 @@ public class CommandHandler {
                     }
                 }
                 System.out.println("[Config] Parameter reset successfully!");
+                configHandler.setSshManagerData(sshManagerData);
             }
             default -> {
                 return reject();
@@ -137,3 +108,11 @@ public class CommandHandler {
         return 1;
     }
 }
+/*
+    CONFIG("config",new String[]{"cfg"},0,new Command[]{CONFIG_QUERY,CONFIG_MODIFY,CONFIG_RESET}),
+
+    SSH_CONNECTION("ssh",new String[]{"sshConnection","sshcon","connection","network"},false,true,-1),
+    FINDER("finder",new String[]{"fnd","files",},false,true,-1);
+
+
+     */

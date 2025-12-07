@@ -1,6 +1,7 @@
 package com.bugalin;
 
-import com.bugalin.data.Config;
+import com.bugalin.command.data.Config;
+import com.bugalin.command.data.SshManagerData;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
@@ -15,34 +16,38 @@ public class ConfigHandler {
         objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
     }
 
-    public void readConfig() throws IOException {
+    public void readConfig(){
         File file = new File("config.json");
-        if (!file.exists()) {
-            file.createNewFile();
-            System.out.println("[ERROR] Config file not found during loading, creating default config file.");
-            this.jObjectConfig = Config.defaultConfig();
-            objectMapper.writeValue(file, this.jObjectConfig);
-            return;
+        try {
+            if (!file.exists()) {
+                file.createNewFile();
+                this.jObjectConfig = Config.defaultConfig();
+                objectMapper.writeValue(file, this.jObjectConfig);
+                return;
+            }
+            this.jObjectConfig = objectMapper.readValue(file, Config.class);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-        this.jObjectConfig = objectMapper.readValue(file, Config.class);
-        System.out.println("[Config] Config file loaded successfully.");
     }
 
-    public void saveConfig() throws IOException {
+    public void saveConfig(){
         File file = new File("config.json");
-        if (!file.exists()) {
-            file.createNewFile();
-            System.out.println("[ERROR] Config file not found during saving, creating config file.");
+        try {
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+            objectMapper.writeValue(file, this.jObjectConfig);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-        objectMapper.writeValue(file, this.jObjectConfig);
-        System.out.println("[Config] Config file saved successfully.");
     }
 
     public Config getConfig() {
         return this.jObjectConfig;
     }
 
-    public void setConfig(Config jObjectConfig) {
-        this.jObjectConfig = jObjectConfig;
+    public void setSshManagerData(SshManagerData sshManagerData) {
+        this.jObjectConfig.setSshManagerData(sshManagerData);
     }
 }

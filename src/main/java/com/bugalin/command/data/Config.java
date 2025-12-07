@@ -1,4 +1,4 @@
-package com.bugalin.data;
+package com.bugalin.command.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -11,7 +11,7 @@ public class Config {
     public SshManagerData getSshData() {
         return sshManagerData;
     }
-    public void setSshData(SshManagerData sshManagerData) {
+    public void setSshManagerData(SshManagerData sshManagerData) {
         this.sshManagerData = sshManagerData;
     }
     public RemoteFileHandlerData getFileHandlerData() {return remoteFileHandlerData;}
@@ -27,7 +27,7 @@ public class Config {
         sshManagerData.setPort(22);
         sshManagerData.setPrivateKeyPath("C:/Users/19364/.ssh/keyBugalin.pem");
         sshManagerData.setKnownHostsPath("C:/Users/19364/.ssh/known_hosts");
-        jObjectConfig.setSshData(sshManagerData);
+        jObjectConfig.setSshManagerData(sshManagerData);
 
         RemoteFileHandlerData remoteFileHandlerData = new RemoteFileHandlerData();
         remoteFileHandlerData.setCurrentDir("/");
