@@ -1,4 +1,4 @@
-package com.bugalin.command.data;
+package com.bugalin.data;
 
 public enum ExitStatus {
     SUCCESS(0),
@@ -7,7 +7,7 @@ public enum ExitStatus {
     // Command Parse Error
     EMPTY_INPUT(20),
     UNKNOWN_COMMAND(21),
-    WRONG_ARGUMENT_COUNT(22),;
+    INVALID_ARGUMENT(22),;
 
     private final int code;
     ExitStatus(int code) {
@@ -22,6 +22,6 @@ public enum ExitStatus {
         return code;
     }
     public boolean isSuccess() {
-        return this == SUCCESS || this == EXIT_PROGRAM;
+        return this == SUCCESS || this == EXIT_PROGRAM || this == EMPTY_INPUT;
     }
 }

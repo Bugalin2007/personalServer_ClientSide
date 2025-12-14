@@ -2,8 +2,8 @@ package com.bugalin.command;
 
 import com.bugalin.command.base.AbstractCommand;
 import com.bugalin.command.base.CommandContext;
-import com.bugalin.command.data.ExecResult;
-import com.bugalin.command.data.ExitStatus;
+import com.bugalin.data.ExecResult;
+import com.bugalin.data.ExitStatus;
 
 public class QuitProgram extends AbstractCommand {
 

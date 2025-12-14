@@ -1,4 +1,4 @@
-package com.bugalin;
+package com.bugalin.handler;
 
 public class RemoteFileHandler {
 }

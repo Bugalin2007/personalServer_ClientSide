@@ -16,7 +16,6 @@ public class CommandRegister {
     }
 
     public void registerSubCommand(SubCommand subCommand) {
-        if (subCommand == null){return;}
         String parentName = subCommand.getParentCommand().getName();
         subCommands.computeIfAbsent(parentName, _ -> new HashMap<>())
                 .put(subCommand.getName(), subCommand);
@@ -36,9 +35,5 @@ public class CommandRegister {
 
     protected SubCommand findSubCommand(String commandName, String subCommandName) {
         return subCommands.get(commandName).get(subCommandName);
-    }
-
-    public void registerAll() {
-
     }
 }

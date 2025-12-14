@@ -1,9 +1,14 @@
 package com.bugalin;
 
 import com.bugalin.command.QuitProgram;
+import com.bugalin.command.SSHConnection;
+import com.bugalin.command.SSHConnectionConfig;
+import com.bugalin.command.base.Command;
 import com.bugalin.command.base.CommandDispatcher;
 import com.bugalin.command.base.CommandRegister;
-import com.bugalin.command.data.ExecResult;
+import com.bugalin.data.ExecResult;
+import com.bugalin.handler.ConfigHandler;
+import com.bugalin.handler.SSHManager;
 
 import java.util.Scanner;
 
@@ -16,7 +21,7 @@ public class CLIApplication {
 
     private static void launch(){
         configHandler.readConfig();
-        sshManager = new SSHManager(configHandler.getConfig().getSshData());
+        sshManager = new SSHManager(configHandler.getSshManagerData());
         sshManager.initialize();
         sshManager.connect();
         register();
@@ -25,6 +30,9 @@ public class CLIApplication {
 
     private static void register() {
         commandRegister.register(new QuitProgram());
+        Command ssh = new SSHConnection();
+        commandRegister.register(ssh);
+        commandRegister.registerSubCommand(new SSHConnectionConfig(ssh,configHandler));
     }
 
     private static void shutdown(){

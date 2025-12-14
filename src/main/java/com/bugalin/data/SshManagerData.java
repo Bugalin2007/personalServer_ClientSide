@@ -1,4 +1,6 @@
-package com.bugalin.command.data;
+package com.bugalin.data;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class SshManagerData {
     private String host;
@@ -8,6 +10,17 @@ public class SshManagerData {
     private String knownHostsPath;
 
     public SshManagerData(){}
+
+    @JsonIgnore
+    public static SshManagerData getdefault() {
+        SshManagerData sshManagerData = new SshManagerData();
+        sshManagerData.host = "127.0.0.1";
+        sshManagerData.username = "root";
+        sshManagerData.port = 22;
+        sshManagerData.privateKeyPath = "";
+        sshManagerData.knownHostsPath = "";
+        return sshManagerData;
+    }
 
     public String getHost() {
         return host;

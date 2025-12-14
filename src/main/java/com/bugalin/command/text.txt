@@ -1,4 +1,3 @@
-/*
     private int commandFinder(String[] args) {
         switch(args[0]) {
             case "open" -> {}
@@ -49,12 +48,12 @@
             case "query" -> {
                 String message;
                 switch (args[1]) {
-                    case "host" -> message = "[Config] Current host is " + sshManagerData.getHost();
-                    case "username" -> message = "[Config] Current username is " + sshManagerData.getUsername();
-                    case "port" -> message = "[Config] Current port is " + sshManagerData.getPort();
-                    case "privateKeyPath" -> message = "[Config] Private key path is " + sshManagerData.getPrivateKeyPath();
-                    case "knownHostsPath" -> message = "[Config] Known hosts path is " + sshManagerData.getKnownHostsPath();
-                    default -> message = " [Config] Current SSH parameters: \n |  host : " + sshManagerData.getHost()
+                    case "host" -> message = "[ConfigJson] Current host is " + sshManagerData.getHost();
+                    case "username" -> message = "[ConfigJson] Current username is " + sshManagerData.getUsername();
+                    case "port" -> message = "[ConfigJson] Current port is " + sshManagerData.getPort();
+                    case "privateKeyPath" -> message = "[ConfigJson] Private key path is " + sshManagerData.getPrivateKeyPath();
+                    case "knownHostsPath" -> message = "[ConfigJson] Known hosts path is " + sshManagerData.getKnownHostsPath();
+                    default -> message = " [ConfigJson] Current SSH parameters: \n |  host : " + sshManagerData.getHost()
                                          + "\n |  username : " + sshManagerData.getUsername()
                                          + "\n |  port : " + sshManagerData.getPort()
                                          + "\n |  privateKeyPath : " + sshManagerData.getPrivateKeyPath()
@@ -63,7 +62,7 @@
                 System.out.println(message);
             }
             case "modify" -> {
-                System.out.print("[Config] Enter new value for the parameter\n> ");
+                System.out.print("[ConfigJson] Enter new value for the parameter\n> ");
                 String newValue = scanner.next();
                 switch (args[1]) {
                     case "host" -> sshManagerData.setHost(newValue);
@@ -72,10 +71,10 @@
                     case "privateKeyPath" -> sshManagerData.setPrivateKeyPath(newValue);
                     case "knownHostsPath" -> sshManagerData.setKnownHostsPath(newValue);
                     default -> {
-                        return reject("[ERROR] Config parameter not found!");
+                        return reject("[ERROR] ConfigJson parameter not found!");
                     }
                 }
-                System.out.println("[Config] Parameter changed successfully!");
+                System.out.println("[ConfigJson] Parameter changed successfully!");
             }
             case "reset" -> {
                 switch (args[1]) {
@@ -85,10 +84,10 @@
                     case "privateKeyPath" -> sshManagerData.setPrivateKeyPath("C:/Users/19364/.ssh/keyBugalin.pem");
                     case "knownHostsPath" -> sshManagerData.setKnownHostsPath("C:/Users/19364/.ssh/known_hosts");
                     default -> {
-                        return reject("[ERROR] Config parameter not found!");
+                        return reject("[ERROR] ConfigJson parameter not found!");
                     }
                 }
-                System.out.println("[Config] Parameter reset successfully!");
+                System.out.println("[ConfigJson] Parameter reset successfully!");
                 configHandler.setSshManagerData(sshManagerData);
             }
             default -> {

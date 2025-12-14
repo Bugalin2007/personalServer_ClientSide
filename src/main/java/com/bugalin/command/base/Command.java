@@ -1,6 +1,6 @@
 package com.bugalin.command.base;
 
-import com.bugalin.command.data.ExecResult;
+import com.bugalin.data.ExecResult;
 
 public interface Command {
     String getName();

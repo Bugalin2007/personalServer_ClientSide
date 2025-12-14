@@ -1,9 +1,5 @@
 package com.bugalin.command.base;
 
-import com.bugalin.command.data.ExecResult;
-
-import java.util.List;
-
 public abstract class AbstractCommand implements Command {
     private final String name;
     private final String[] aliases;

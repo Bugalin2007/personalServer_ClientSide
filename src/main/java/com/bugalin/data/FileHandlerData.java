@@ -1,14 +1,12 @@
-package com.bugalin.command.data;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+package com.bugalin.data;
 
 import java.util.Map;
 
-public class RemoteFileHandlerData {
+public class FileHandlerData {
     private String currentDir;
     private Map<String,String> pathAlias;
 
-    public RemoteFileHandlerData() {}
+    public FileHandlerData() {}
 
     public String getCurrentDir() {return currentDir;}
     public void setCurrentDir(String currentDir) {this.currentDir = currentDir;}

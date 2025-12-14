@@ -1,6 +1,7 @@
 package com.bugalin.command.base;
 
-import com.bugalin.command.data.*;
+import com.bugalin.data.ExecResult;
+import com.bugalin.data.ExitStatus;
 
 import java.util.Arrays;
 
@@ -27,12 +28,27 @@ public class CommandDispatcher {
                 : commandRegister.findCommand(commandName);
 
         if (command == null) {
-            return new ExecResult(ExitStatus.UNKNOWN_COMMAND,null, commandName + (hasSubCommand ? subCommandName : ""));
+            return new ExecResult(ExitStatus.UNKNOWN_COMMAND,null, commandName + " " + (hasSubCommand ? subCommandName : ""));
         }
 
         args = Arrays.copyOfRange(input, hasSubCommand ? 2 : 1, input.length);
 
         CommandContext context = new CommandContext(command,args);
-        return command.execute(context);
+
+        ExecResult result = command.execute(context);
+        if(result.isCommandUsageProblem()){
+            CommandHelp(command);
+        }
+        return result;
+    }
+
+    public void CommandHelp(Command command){
+        String help = "---------" +
+                command.getLiteralName() +
+                "---------\nDescription:" +
+                command.getDescription() +
+                "\nUsage:" +
+                command.getUsage();
+        System.out.println(help);
     }
 }

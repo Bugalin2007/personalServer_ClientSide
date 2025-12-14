@@ -1,4 +1,4 @@
-package com.bugalin.command.data;
+package com.bugalin.data;
 
 public record ExecResult(ExitStatus exitStatus, String output, String error) {
 
@@ -12,5 +12,9 @@ public record ExecResult(ExitStatus exitStatus, String output, String error) {
 
     public boolean isExit(){
         return exitStatus == ExitStatus.EXIT_PROGRAM;
+    }
+
+    public boolean isCommandUsageProblem() {
+        return exitStatus == ExitStatus.UNKNOWN_COMMAND || exitStatus == ExitStatus.INVALID_ARGUMENT;
     }
 }

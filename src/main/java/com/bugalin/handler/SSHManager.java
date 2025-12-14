@@ -1,8 +1,8 @@
-package com.bugalin;
+package com.bugalin.handler;
 
-import com.bugalin.command.data.ExitStatus;
-import com.bugalin.command.data.ExecResult;
-import com.bugalin.command.data.SshManagerData;
+import com.bugalin.data.ExitStatus;
+import com.bugalin.data.ExecResult;
+import com.bugalin.data.SshManagerData;
 import com.jcraft.jsch.*;
 
 import java.io.InputStream;
@@ -114,7 +114,7 @@ public class SSHManager {
     }
 
     public ExecResult ChannelExec(String command){
-        if (status != 1){return new ExecResult(ExitStatus.UNKNOWN_ERROR,"There is no active session.");}
+        if (status != 1){return new ExecResult(ExitStatus.UNKNOWN_ERROR,null,"There is no active session.");}
         ChannelExec channel = null;
         StringBuilder output = new StringBuilder();
         StringBuilder error = new StringBuilder();
@@ -158,6 +158,6 @@ public class SSHManager {
                 channel.disconnect();
             }
         }
-        return new ExecResult(ExitStatus.UNKNOWN_ERROR,"Unknown Error");
+        return new ExecResult(ExitStatus.UNKNOWN_ERROR,null,"Unknown Error");
     }
 }
