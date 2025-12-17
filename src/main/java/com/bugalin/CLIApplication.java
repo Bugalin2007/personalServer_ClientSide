@@ -36,7 +36,7 @@ public class CLIApplication {
         commandRegister.register(ssh);
         commandRegister.registerSubCommand(new SSHConnectionConfig(ssh));
         commandRegister.registerSubCommand(new SSHConnectionConnect(ssh));
-        Finder finder = new Finder();
+        Finder finder = new Finder(remoteFileHandler);
         commandRegister.register(finder);
         commandRegister.registerSubCommand(new FinderView(finder));
     }
