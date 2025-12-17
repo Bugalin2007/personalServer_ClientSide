@@ -3,10 +3,12 @@ package com.bugalin;
 import com.bugalin.command.QuitProgram;
 import com.bugalin.command.SSHConnection;
 import com.bugalin.command.SSHConnectionConfig;
+import com.bugalin.command.SSHConnectionConnect;
 import com.bugalin.command.base.Command;
 import com.bugalin.command.base.CommandDispatcher;
 import com.bugalin.command.base.CommandRegister;
 import com.bugalin.data.ExecResult;
+import com.bugalin.data.ExitStatus;
 import com.bugalin.handler.ConfigHandler;
 import com.bugalin.handler.SSHManager;
 
@@ -33,6 +35,7 @@ public class CLIApplication {
         Command ssh = new SSHConnection();
         commandRegister.register(ssh);
         commandRegister.registerSubCommand(new SSHConnectionConfig(ssh,configHandler));
+        commandRegister.registerSubCommand(new SSHConnectionConnect(ssh,configHandler,sshManager));
     }
 
     private static void shutdown(){
@@ -41,8 +44,10 @@ public class CLIApplication {
     }
 
     private static void runtime() {
-        ExecResult commandResult;
+        ExecResult commandResult = new ExecResult(ExitStatus.SUCCESS,"Program Launched",null);
         do {
+            System.out.println((commandResult.isSuccess()?"[Server Terminal]"+commandResult.output()
+                    :"[ERROR]"+commandResult.error()));
             System.out.print("\n> ");
             commandResult = commandDispatcher.dispatch(scanner.nextLine());
         } while (!commandResult.isExit());

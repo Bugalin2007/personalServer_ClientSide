@@ -7,7 +7,11 @@ public enum ExitStatus {
     // Command Parse Error
     EMPTY_INPUT(20),
     UNKNOWN_COMMAND(21),
-    INVALID_ARGUMENT(22),;
+    INVALID_ARGUMENT(22),
+    //Jsch Problem
+    JSCH_INIT_ERROR(30),
+    CONNECTION_ERROR(31),
+    INVALID_OPERATION(32),;
 
     private final int code;
     ExitStatus(int code) {

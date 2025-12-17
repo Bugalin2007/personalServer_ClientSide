@@ -4,6 +4,6 @@ import com.bugalin.command.base.AbstractParentCommand;
 
 public class SSHConnection extends AbstractParentCommand {
     public SSHConnection() {
-        super("ssh",new String[]{"sshcon, network"});
+        super("ssh",new String[]{"network"});
     }
 }

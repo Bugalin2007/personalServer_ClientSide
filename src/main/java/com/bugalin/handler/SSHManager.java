@@ -37,25 +37,22 @@ public class SSHManager {
         this.status = -1;
     }
 
-    public int getStatus() {
+    public int getStatusCode() {
         return this.status;
     }
 
-    public String getStatus(boolean isNumber){
-        if (isNumber){
-            return String.valueOf(getStatus());
-        }
+    public String getStatus(){
         switch (this.status){
-            case 0 -> {return "[SSH Connection] Session is currently disconnected";}
-            case 1 -> {return "[SSH Connection] Session is currently connected. ";}
-            case -1 -> {return "[SSH Connection] Session not exist. Initialization required. ";}
-            default -> {return "[SSH Connection] Unknown session status";}
+            case 0 -> {return "Session is currently disconnected";}
+            case 1 -> {return "Session is currently connected. ";}
+            case -1 -> {return "Session not exist. Initialization required. ";}
+            default -> {return "Unknown session status";}
         }
     }
 
-    public int initialize(){
+    public ExecResult initialize(){
         if (status == 1){
-            return 1;
+            disconnect();
         }
         try {
             JSch jsch = new JSch();
@@ -63,39 +60,36 @@ public class SSHManager {
             jsch.setKnownHosts(knownHostsPath);
             this.session = jsch.getSession(username,host,port);
             this.status = 0;
-            return 0;
+            return new ExecResult(ExitStatus.SUCCESS,null,"Jsch initialized.");
         } catch (JSchException e) {
-            e.printStackTrace();
+            return new ExecResult(ExitStatus.CONNECTION_ERROR,null,"Cannot initialize Jsch. \n   Detailed description: "+e.getMessage());
         }
-        return 2;
     }
 
-    public int connect(){
+    public ExecResult connect(){
         if (status != 0){
-            return 1;
+            return new ExecResult(ExitStatus.INVALID_OPERATION,null,"Cannot connect when connected.");
         }
         try {
             session.connect();
             this.status = 1;
-            return 0;
+            return new ExecResult(ExitStatus.SUCCESS,null,"Connected to server.");
         } catch (JSchException e) {
-            e.printStackTrace();
+            return new ExecResult(ExitStatus.CONNECTION_ERROR,null,"Cannot connect to server. \n   Detailed description: "+e.getMessage());
         }
-        return 2;
     }
 
-    public int disconnect(){
+    public ExecResult disconnect(){
         if (status != 1){
-            return 1;
+            return new ExecResult(ExitStatus.INVALID_OPERATION,null,"Cannot disconnect when not connected.");
         }
         try {
             session.disconnect();
             this.status = 0;
-            return 0;
+            return new ExecResult(ExitStatus.SUCCESS,null,"Disconnected from server.");
         }catch (Exception e){
-            e.printStackTrace();
+            return new ExecResult(ExitStatus.CONNECTION_ERROR,null,"Cannot disconnect from server. \n   Detailed description: "+e.getMessage());
         }
-        return 2;
     }
 
     public void ChannelSftp(){
@@ -142,7 +136,6 @@ public class SSHManager {
                 Thread.sleep(100);
             }
 
-            // Read error output
             while (err.available() > 0) {
                 int bytesRead = err.read(buffer, 0, 1024);
                 if (bytesRead < 0) break;

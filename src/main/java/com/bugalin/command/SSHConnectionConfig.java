@@ -24,17 +24,16 @@ public class SSHConnectionConfig extends AbstractSubCommand {
         switch (operation) {
             case "query" -> {
                 sshManagerData = configHandler.getSshManagerData();
-                System.out.println("-----[SSH Connection Configuration]-----\nHost: " + sshManagerData.getHost()
+                return new ExecResult(ExitStatus.SUCCESS, "-----[SSH Connection Configuration]-----\nHost: " + sshManagerData.getHost()
                         + "\nPort: " + sshManagerData.getPort()
                         + "\nUsername: " + sshManagerData.getUsername()
                         + "\nPrivateKeyPath: " + sshManagerData.getPrivateKeyPath()
-                        + "\nKnownHostsPath: " + sshManagerData.getKnownHostsPath());
-                return new ExecResult(ExitStatus.SUCCESS, null, null);
+                        + "\nKnownHostsPath: " + sshManagerData.getKnownHostsPath(), null);
             }
             case "reset" -> {
                 sshManagerData = SshManagerData.getdefault();
                 configHandler.setSshManagerData(sshManagerData);
-                return new ExecResult(ExitStatus.SUCCESS, null, null);
+                return new ExecResult(ExitStatus.SUCCESS, "SSH Config reset.", null);
             }
             case "modify" -> {
                 if (args.length < 3) {
