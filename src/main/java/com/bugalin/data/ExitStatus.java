@@ -22,9 +22,6 @@ public enum ExitStatus {
         return exitCode == 0 ? SUCCESS : UNKNOWN_ERROR;
     }
 
-    public int code() {
-        return code;
-    }
     public boolean isSuccess() {
         return this == SUCCESS || this == EXIT_PROGRAM || this == EMPTY_INPUT;
     }
