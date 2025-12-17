@@ -1,15 +1,13 @@
 package com.bugalin;
 
-import com.bugalin.command.QuitProgram;
-import com.bugalin.command.SSHConnection;
-import com.bugalin.command.SSHConnectionConfig;
-import com.bugalin.command.SSHConnectionConnect;
+import com.bugalin.command.*;
 import com.bugalin.command.base.Command;
 import com.bugalin.command.base.CommandDispatcher;
 import com.bugalin.command.base.CommandRegister;
 import com.bugalin.data.ExecResult;
 import com.bugalin.data.ExitStatus;
 import com.bugalin.handler.ConfigHandler;
+import com.bugalin.handler.RemoteFileHandler;
 import com.bugalin.handler.SSHManager;
 
 import java.util.Scanner;
@@ -17,6 +15,7 @@ import java.util.Scanner;
 public class CLIApplication {
     private static final Scanner scanner = new Scanner(System.in);
     private static SSHManager sshManager;
+    private static RemoteFileHandler remoteFileHandler;
     private static final ConfigHandler configHandler = new ConfigHandler();
     private static final CommandRegister commandRegister = new CommandRegister();
     private static CommandDispatcher commandDispatcher;
@@ -26,16 +25,20 @@ public class CLIApplication {
         sshManager = new SSHManager(configHandler.getSshManagerData());
         sshManager.initialize();
         sshManager.connect();
+        remoteFileHandler = new RemoteFileHandler(configHandler.getFileHandlerData(),sshManager);
         register();
         commandDispatcher = new CommandDispatcher(commandRegister);
     }
 
     private static void register() {
         commandRegister.register(new QuitProgram());
-        Command ssh = new SSHConnection();
+        SSHConnection ssh = new SSHConnection(configHandler,sshManager);
         commandRegister.register(ssh);
-        commandRegister.registerSubCommand(new SSHConnectionConfig(ssh,configHandler));
-        commandRegister.registerSubCommand(new SSHConnectionConnect(ssh,configHandler,sshManager));
+        commandRegister.registerSubCommand(new SSHConnectionConfig(ssh));
+        commandRegister.registerSubCommand(new SSHConnectionConnect(ssh));
+        Finder finder = new Finder();
+        commandRegister.register(finder);
+        commandRegister.registerSubCommand(new FinderView(finder));
     }
 
     private static void shutdown(){
@@ -44,15 +47,21 @@ public class CLIApplication {
     }
 
     private static void runtime() {
-        ExecResult commandResult = new ExecResult(ExitStatus.SUCCESS,"Program Launched",null);
+        ExecResult commandResult;
         do {
-            System.out.println((commandResult.isSuccess()?"[Server Terminal]"+commandResult.output()
-                    :"[ERROR]"+commandResult.error()));
             System.out.print("\n> ");
             commandResult = commandDispatcher.dispatch(scanner.nextLine());
+            printOutput(commandResult);
         } while (!commandResult.isExit());
     }
 
+    private static void printOutput(ExecResult commandResult) {
+        if (commandResult.isSuccess() && commandResult.output() != null) {
+            System.out.println("[Server Terminal]"+commandResult.output());
+        } else if (!commandResult.isSuccess() && commandResult.error() != null) {
+            System.out.println("[ERROR]"+commandResult.error());
+        }
+    }
     public static void main(String[] args) {
         launch();
         runtime();

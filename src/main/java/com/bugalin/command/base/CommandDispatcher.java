@@ -33,6 +33,11 @@ public class CommandDispatcher {
 
         args = Arrays.copyOfRange(input, hasSubCommand ? 2 : 1, input.length);
 
+        if(args.length == 1 && args[0].equals("help")) {
+            CommandHelp(command);
+            return new ExecResult(ExitStatus.SUCCESS,null,null);
+        }
+
         CommandContext context = new CommandContext(command,args);
 
         ExecResult result = command.execute(context);

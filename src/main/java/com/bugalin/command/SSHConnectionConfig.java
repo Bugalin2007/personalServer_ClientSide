@@ -11,9 +11,9 @@ import com.bugalin.handler.ConfigHandler;
 public class SSHConnectionConfig extends AbstractSubCommand {
     private final ConfigHandler configHandler;
 
-    public SSHConnectionConfig(Command parentCommand, ConfigHandler configHandler) {
+    public SSHConnectionConfig(SSHConnection parentCommand) {
         super(parentCommand, "config", new String[]{"cfg"});
-        this.configHandler = configHandler;
+        this.configHandler = parentCommand.getConfigHandler();
     }
 
     @Override

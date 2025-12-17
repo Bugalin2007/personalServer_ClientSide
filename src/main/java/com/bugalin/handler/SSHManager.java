@@ -107,7 +107,15 @@ public class SSHManager {
         }
     }
 
-    public ExecResult ChannelExec(String command){
+    public ExecResult executeCommand(String command){
+        return ChannelExec(command);
+    }
+
+    public ExecResult executeCommandAtDir(String command, String directory){
+        return ChannelExec("cd "+directory+" && "+command);
+    }
+
+    private ExecResult ChannelExec(String command){
         if (status != 1){return new ExecResult(ExitStatus.UNKNOWN_ERROR,null,"There is no active session.");}
         ChannelExec channel = null;
         StringBuilder output = new StringBuilder();
@@ -139,18 +147,17 @@ public class SSHManager {
             while (err.available() > 0) {
                 int bytesRead = err.read(buffer, 0, 1024);
                 if (bytesRead < 0) break;
-                error.append("ERROR: ").append(new String(buffer, 0, bytesRead));
+                error.append(new String(buffer, 0, bytesRead));
             }
 
-            return new ExecResult(channel.getExitStatus(), output.toString()+error.toString());
+            return new ExecResult(ExitStatus.parseExitCode(channel.getExitStatus()), output.toString(),error.toString());
 
         } catch (Exception e) {
-            e.printStackTrace();
+            return new ExecResult(ExitStatus.UNKNOWN_ERROR,null,e.getMessage());
         } finally {
             if (channel != null) {
                 channel.disconnect();
             }
         }
-        return new ExecResult(ExitStatus.UNKNOWN_ERROR,null,"Unknown Error");
     }
 }

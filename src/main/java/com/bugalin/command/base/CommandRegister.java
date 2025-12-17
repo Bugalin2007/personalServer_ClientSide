@@ -19,6 +19,9 @@ public class CommandRegister {
         String parentName = subCommand.getParentCommand().getName();
         subCommands.computeIfAbsent(parentName, _ -> new HashMap<>())
                 .put(subCommand.getName(), subCommand);
+        if (subCommand.getAliases() == null){
+            return;
+        }
         for (String alias : subCommand.getAliases()) {
             subCommands.get(parentName).put(alias, subCommand);
         }

@@ -16,10 +16,10 @@ public class SSHConnectionConnect extends AbstractSubCommand {
     private final ConfigHandler configHandler;
     private final SSHManager sshManager;
 
-    public SSHConnectionConnect(Command parentCommand, ConfigHandler configHandler, SSHManager sshManager) {
+    public SSHConnectionConnect(SSHConnection parentCommand) {
         super(parentCommand, "connection", new String[]{"con"});
-        this.configHandler = configHandler;
-        this.sshManager = sshManager;
+        this.configHandler = parentCommand.getConfigHandler();
+        this.sshManager = parentCommand.getSshManager();
     }
 
     @Override
