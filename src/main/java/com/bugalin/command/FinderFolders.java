@@ -5,11 +5,11 @@ import com.bugalin.command.base.CommandContext;
 import com.bugalin.data.ExecResult;
 import com.bugalin.handler.RemoteFileHandler;
 
-public class FinderView extends AbstractSubCommand {
+public class FinderFolders extends AbstractSubCommand {
     private final RemoteFileHandler remoteFileHandler;
 
-    public FinderView(Finder parentCommand) {
-        super(parentCommand, "view", null);
+    public FinderFolders(Finder parentCommand) {
+        super(parentCommand, "folder", new String[] {"see","look"});
         this.remoteFileHandler = parentCommand.getRemoteFileHandler();
     }
 
@@ -20,16 +20,16 @@ public class FinderView extends AbstractSubCommand {
 
     @Override
     public String getLiteralName() {
-        return "Finder";
+        return "Finder Browser";
     }
 
     @Override
     public String getDescription() {
-        return "Open and switch focus to selected directory.";
+        return "Browse files at current directory.";
     }
 
     @Override
     public String getUsage() {
-        return "finder view <Dir Name>";
+        return "finder folder [refresh|open|goto] <fileName>";
     }
 }

@@ -1,11 +1,9 @@
 package com.bugalin;
 
 import com.bugalin.command.*;
-import com.bugalin.command.base.Command;
 import com.bugalin.command.base.CommandDispatcher;
 import com.bugalin.command.base.CommandRegister;
 import com.bugalin.data.ExecResult;
-import com.bugalin.data.ExitStatus;
 import com.bugalin.handler.ConfigHandler;
 import com.bugalin.handler.RemoteFileHandler;
 import com.bugalin.handler.SSHManager;
@@ -38,7 +36,7 @@ public class CLIApplication {
         commandRegister.registerSubCommand(new SSHConnectionConnect(ssh));
         Finder finder = new Finder(remoteFileHandler);
         commandRegister.register(finder);
-        commandRegister.registerSubCommand(new FinderView(finder));
+        commandRegister.registerSubCommand(new FinderFolders(finder));
     }
 
     private static void shutdown(){
