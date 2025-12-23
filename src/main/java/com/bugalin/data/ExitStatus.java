@@ -11,7 +11,11 @@ public enum ExitStatus {
     //Jsch Problem
     JSCH_INIT_ERROR(30),
     CONNECTION_ERROR(31),
-    INVALID_OPERATION(32),;
+    INVALID_OPERATION(32),
+    //File Problem
+    FETCH_CONTEXT_FAIL(40),
+    NONEXISTENT_FILE(41),
+    EMPTY_BROWSE_HISTORY(42),;
 
     private final int code;
     ExitStatus(int code) {

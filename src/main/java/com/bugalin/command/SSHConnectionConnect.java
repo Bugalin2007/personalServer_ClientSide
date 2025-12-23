@@ -52,7 +52,7 @@ public class SSHConnectionConnect extends AbstractSubCommand {
                 return sshManager.disconnect();
             }
             default -> {
-                return new ExecResult(ExitStatus.INVALID_ARGUMENT,null,"Unknown operation on ssh config.");
+                return new ExecResult(ExitStatus.INVALID_ARGUMENT,null,"Unknown operation on ssh connection.");
             }
         }
     }

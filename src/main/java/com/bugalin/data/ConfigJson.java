@@ -23,11 +23,7 @@ public class ConfigJson {
     public static ConfigJson defaultConfig(){
         ConfigJson configJson = new ConfigJson();
         configJson.setSshManagerData(SshManagerData.getdefault());
-
-        FileHandlerData fileHandlerData = new FileHandlerData();
-        fileHandlerData.setCurrentDir("/");
-        fileHandlerData.setPathAlias(new HashMap<>());
-        configJson.setFileHandlerData(fileHandlerData);
+        configJson.setFileHandlerData(FileHandlerData.getdefault());
 
         return configJson;
     }

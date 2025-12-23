@@ -1,25 +1,66 @@
 package com.bugalin.handler;
 
 import com.bugalin.data.ExecResult;
+import com.bugalin.data.ExitStatus;
 import com.bugalin.data.FileHandlerData;
 import com.bugalin.data.FileNode;
 
+import java.util.ArrayDeque;
 import java.util.Map;
+import java.util.Deque;
 
 public class RemoteFileHandler {
     private final SSHManager sshManager;
-    private String currentDir;
+    private FileNode currentDir;
     private Map<String,String> pathAlias;
+    private Deque<FileNode> browseHistory;
+    private int browseHistorySize;
 
     public RemoteFileHandler(FileHandlerData fileHandlerData, SSHManager sshManager) {
         this.sshManager = sshManager;
-        this.currentDir = fileHandlerData.getCurrentDir();
         this.pathAlias = fileHandlerData.getPathAlias();
+        currentDir = new FileNode(fileHandlerData.getCurrentDirPath(), fileHandlerData.getCurrentDirName(), true);
+        currentDir = peekContent(currentDir);
+        browseHistorySize = fileHandlerData.getBrowseHistorySize();
+        browseHistory = new ArrayDeque<>(browseHistorySize);
+    }
+
+    public String display(){
+        return currentDir.toTreeString();
+    }
+
+    public String getCurrentDirPath(){
+        return currentDir.getPath();
+    }
+
+    public ExecResult seeLast(){
+        return shiftFocus();
+    }
+
+    public ExecResult changeFocusToPath(String path){
+        String name = path.split("/")[path.split("/").length-1];
+        FileNode newDir = peekContent(new FileNode(path, name, true));
+        return shiftFocus(newDir);
+    }
+
+    public ExecResult changeFocusToPathInside(String path){
+        FileNode focus = currentDir.getFolder(path);
+        return shiftFocus(focus);
+    }
+
+    public ExecResult openFolder(String path){
+        FileNode focus = currentDir.getFolder(path);
+        focus = peekContent(focus);
+        if (focus == null){
+            return new ExecResult(ExitStatus.FETCH_CONTEXT_FAIL,null,"Failed to fetch target directory");
+        }
+        currentDir.setFolder(focus,path);
+        return new ExecResult(ExitStatus.SUCCESS,null,null);
     }
 
     private FileNode peekContent(FileNode fileNode) {
         if(fileNode.isContentKnown()) {
-            return null;
+            return fileNode;
         }
         ExecResult returnStuff = sshManager.executeCommandAtDir("ls -F",fileNode.getPath());
         if(!returnStuff.isSuccess()) {
@@ -48,5 +89,28 @@ public class RemoteFileHandler {
             }
         }
         return fileNode.setContent(children);
+    }
+
+    private ExecResult shiftFocus(){
+        if(browseHistory.isEmpty()){
+            return new ExecResult(ExitStatus.EMPTY_BROWSE_HISTORY,null,"There is no browse history.");
+        }
+        currentDir = browseHistory.pop();
+        return new ExecResult(ExitStatus.SUCCESS,null,null);
+    }
+
+    private ExecResult shiftFocus(FileNode newCurrentDir) {
+        if (newCurrentDir == null){
+            return new ExecResult(ExitStatus.FETCH_CONTEXT_FAIL,null,"Failed to fetch target directory");
+        }
+        if (browseHistory.size() == browseHistorySize) {
+            browseHistory.removeLast();
+        }
+        browseHistory.addFirst(currentDir);
+        currentDir = newCurrentDir;
+        if (!currentDir.isContentKnown()) {
+            currentDir = peekContent(currentDir);
+        }
+        return new ExecResult(ExitStatus.SUCCESS,null,null);
     }
 }
