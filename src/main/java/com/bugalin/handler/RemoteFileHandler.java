@@ -16,6 +16,22 @@ public class RemoteFileHandler {
     private Deque<FileNode> browseHistory;
     private int browseHistorySize;
 
+    public String getUploadPath() {
+        return uploadPath;
+    }
+    public void setUploadPath(String uploadPath) {
+        this.uploadPath = uploadPath;
+    }
+    public String getDownloadPath() {
+        return downloadPath;
+    }
+    public void setDownloadPath(String downloadPath) {
+        this.downloadPath = downloadPath;
+    }
+
+    private String uploadPath;
+    private String downloadPath;
+
     public RemoteFileHandler(FileHandlerData fileHandlerData, SSHManager sshManager) {
         this.sshManager = sshManager;
         this.pathAlias = fileHandlerData.getPathAlias();
@@ -23,10 +39,16 @@ public class RemoteFileHandler {
         currentDir = peekContent(currentDir);
         browseHistorySize = fileHandlerData.getBrowseHistorySize();
         browseHistory = new ArrayDeque<>(browseHistorySize);
+        uploadPath = fileHandlerData.getUploadPath();
+        downloadPath = fileHandlerData.getDownloadPath();
     }
 
     public String display(){
         return currentDir.toTreeString();
+    }
+
+    public String getCurrentDirName() {
+        return currentDir.getFileName();
     }
 
     public String getCurrentDirPath(){
@@ -58,6 +80,26 @@ public class RemoteFileHandler {
         return new ExecResult(ExitStatus.SUCCESS,null,null);
     }
 
+    public FileNode findFile(String name){
+        return findFile(name,currentDir);
+    }
+
+    private FileNode findFile(String name, FileNode node){
+        if (node.getFileName().equals(name) && !node.isDir()){
+            return node;
+        }
+        if (node.isDir()){
+            FileNode result = null;
+            for (FileNode child : node.getChildren()){
+                result = findFile(child.getFileName(), child);
+                if (result != null){
+                    return result;
+                }
+            }
+        }
+        return null;
+    }
+
     private FileNode peekContent(FileNode fileNode) {
         if(fileNode.isContentKnown()) {
             return fileNode;
@@ -67,6 +109,7 @@ public class RemoteFileHandler {
             return null;
         }
         String[] AnnotatedFileList = returnStuff.output().split("\n");
+        System.out.println(returnStuff.output());
         if(AnnotatedFileList.length == 0) {
             return fileNode;
         }

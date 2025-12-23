@@ -92,27 +92,20 @@ public class SSHManager {
         }
     }
 
-    public void ChannelSftp(){
-        if (status != 1){return;}
-        ChannelSftp channelSftp = null;
-        try {
-            channelSftp = (ChannelSftp) session.openChannel("sftp");
-            channelSftp.connect();
-        } catch (JSchException e) {
-            throw new RuntimeException(e);
-        } finally {
-            if (channelSftp != null) {
-                channelSftp.disconnect();
-            }
-        }
-    }
-
     public ExecResult executeCommand(String command){
         return ChannelExec(command);
     }
 
     public ExecResult executeCommandAtDir(String command, String directory){
         return ChannelExec("cd "+directory+" && "+command);
+    }
+
+    public ExecResult uploadFile(String fileName, String localPath, String remotePath){
+        return ChannelSftp(fileName,localPath,remotePath,true);
+    }
+
+    public ExecResult downloadFile(String fileName, String localPath, String remotePath){
+        return ChannelSftp(fileName,localPath,remotePath,false);
     }
 
     private ExecResult ChannelExec(String command){
@@ -159,5 +152,72 @@ public class SSHManager {
                 channel.disconnect();
             }
         }
+    }
+
+    private ExecResult ChannelSftp(String fileName, String localPath, String remotePath, boolean isUpload){
+        ChannelSftp channel = null;
+        String action = isUpload ? "upload" : "download";
+        try{
+            channel = (ChannelSftp) session.openChannel("sftp");
+            channel.connect();
+            channel.cd("/");
+            SftpProgressMonitor monitor = createProgressMonitor(fileName, action);
+            if(isUpload){
+                channel.put(localPath, remotePath,monitor);
+            }else{
+                channel.get(remotePath, localPath,monitor);
+            }
+            return new ExecResult(ExitStatus.SUCCESS,action+" complete.",null);
+        } catch (JSchException | SftpException e) {
+            return new ExecResult(ExitStatus.UNKNOWN_ERROR,null,e.getMessage());
+        } finally {
+            if (channel != null) {
+                channel.disconnect();
+            }
+        }
+    }
+
+    private SftpProgressMonitor createProgressMonitor(String fileName, String operation) {
+        return new SftpProgressMonitor() {
+            private long totalSize;
+            private long transferred = 0;
+            private int lastProgress = -1;
+
+            @Override
+            public void init(int op, String src, String dest, long max) {
+                this.totalSize = max;
+                System.out.println(operation + " " + fileName + " :begin with file size " + formatFileSize(max));
+            }
+
+            @Override
+            public boolean count(long count) {
+                transferred += count;
+                int progress = (int) ((transferred * 100) / totalSize);
+
+                if (progress != lastProgress && progress % 5 == 0) {
+                    System.out.println(operation + " " + fileName + ": " + progress + "% (" +
+                            formatFileSize(transferred) + "/" + formatFileSize(totalSize) + ")");
+                    lastProgress = progress;
+                }
+                return true;
+            }
+
+            @Override
+            public void end() {
+                System.out.println(operation + " " + fileName + " :finished with file size " + formatFileSize(transferred));
+            }
+
+            private String formatFileSize(long size) {
+                if (size < 1024) {
+                    return size + " B";
+                } else if (size < 1024 * 1024) {
+                    return String.format("%.1f KB", size / 1024.0);
+                } else if (size < 1024 * 1024 * 1024) {
+                    return String.format("%.1f MB", size / (1024.0 * 1024.0));
+                } else {
+                    return String.format("%.1f GB", size / (1024.0 * 1024.0 * 1024.0));
+                }
+            }
+        };
     }
 }

@@ -14,11 +14,11 @@ public class SshManagerData {
     @JsonIgnore
     public static SshManagerData getdefault() {
         SshManagerData sshManagerData = new SshManagerData();
-        sshManagerData.host = "127.0.0.1";
-        sshManagerData.username = "root";
+        sshManagerData.host = "10.129.240.97";
+        sshManagerData.username = "ubuntu";
         sshManagerData.port = 22;
-        sshManagerData.privateKeyPath = "";
-        sshManagerData.knownHostsPath = "";
+        sshManagerData.privateKeyPath = "C:/Users/19364/.ssh/keyBugalin.pem";
+        sshManagerData.knownHostsPath = "C:/Users/19364/.ssh/known_hosts";
         return sshManagerData;
     }
 

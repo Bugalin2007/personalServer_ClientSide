@@ -4,6 +4,7 @@ import com.bugalin.command.*;
 import com.bugalin.command.base.CommandDispatcher;
 import com.bugalin.command.base.CommandRegister;
 import com.bugalin.data.ExecResult;
+import com.bugalin.data.FileHandlerData;
 import com.bugalin.handler.ConfigHandler;
 import com.bugalin.handler.RemoteFileHandler;
 import com.bugalin.handler.SSHManager;
@@ -34,13 +35,20 @@ public class CLIApplication {
         commandRegister.register(ssh);
         commandRegister.registerSubCommand(new SSHConnectionConfig(ssh));
         commandRegister.registerSubCommand(new SSHConnectionConnect(ssh));
-        Finder finder = new Finder(remoteFileHandler);
+        Finder finder = new Finder(remoteFileHandler,sshManager);
         commandRegister.register(finder);
         commandRegister.registerSubCommand(new FinderFolders(finder));
+        commandRegister.registerSubCommand(new FinderIO(finder));
     }
 
     private static void shutdown(){
         sshManager.disconnect();
+
+        FileHandlerData data = configHandler.getFileHandlerData();
+        data.setCurrentDirPath(remoteFileHandler.getCurrentDirPath());
+        data.setCurrentDirName(remoteFileHandler.getCurrentDirName());
+        configHandler.setFileHandlerData(data);
+
         configHandler.saveConfig();
     }
 

@@ -49,18 +49,20 @@ public class FileNode {
         return !dirContentUnknown;
     }
 
+    public boolean isDir(){
+        return this.fileType == FileType.DIRECTORY;
+    }
+
     public enum FileType {
         NORMAL,DIRECTORY,EXECUTABLE,LINK
     }
 
     public FileNode getFolder(String path) {
-        System.out.println("TEST: Begin finding folder " + path);
         String[] paths = path.split("/");
         int pointer = 0;
         FileNode focus = this;
         boolean flag;
         while(pointer < paths.length){
-            System.out.println("TEST: Current focus " + focus.getFileName());
             flag = false;
             for (FileNode file : focus.getChildren()) {
                 if (file.getFileName().equals(paths[pointer])) {
@@ -74,7 +76,6 @@ public class FileNode {
                 return null;
             }
         }
-        System.out.println("TEST: Current focus " + focus.getFileName());
         return focus;
     }
 
@@ -85,13 +86,11 @@ public class FileNode {
         FileNode focus = this;
 
         while (pointer < paths.length - 1) {
-            boolean flag = false;
             for (FileNode file : focus.getChildren()) {
                 if (file.getFileName().equals(paths[pointer])) {
                     parent = focus;
                     focus = file;
                     pointer++;
-                    flag = true;
                     break;
                 }
             }

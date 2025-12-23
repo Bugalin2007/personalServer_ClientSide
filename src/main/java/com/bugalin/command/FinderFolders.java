@@ -24,20 +24,27 @@ public class FinderFolders extends AbstractSubCommand {
                 return new ExecResult(ExitStatus.SUCCESS,null,null);
             }
             case "open" -> {
-                return remoteFileHandler.openFolder(args[1]);
+                ExecResult result = remoteFileHandler.openFolder(args[1]);
+                System.out.println(remoteFileHandler.display());
+                return result;
             }
             case "goto" -> {
                 if (args.length < 3) { return new ExecResult(ExitStatus.INVALID_ARGUMENT,null,"Not enough arguments");}
+                ExecResult result;
                 if (args[1].equals("here")){
-                    return remoteFileHandler.changeFocusToPathInside(args[2]);
+                    result = remoteFileHandler.changeFocusToPathInside(args[2]);
                 }else if (args[1].equals("root")){
-                    return remoteFileHandler.changeFocusToPath(args[2]);
+                    result =  remoteFileHandler.changeFocusToPath(args[2]);
                 }else{
                     return new ExecResult(ExitStatus.INVALID_ARGUMENT,null,"Invalid arguments");
                 }
+                System.out.println(remoteFileHandler.display());
+                return result;
             }
             case "return" -> {
-                return remoteFileHandler.seeLast();
+                ExecResult result = remoteFileHandler.seeLast();
+                System.out.println(remoteFileHandler.display());
+                return result;
             }
             default -> {
                 return new ExecResult(ExitStatus.INVALID_ARGUMENT,null,"Invalid arguments");
