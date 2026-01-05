@@ -8,7 +8,9 @@ import com.bugalin.data.FileHandlerData;
 import com.bugalin.handler.ConfigHandler;
 import com.bugalin.handler.RemoteFileHandler;
 import com.bugalin.handler.SSHManager;
+import com.bugalin.handler.SwingTextEditor;
 
+import javax.swing.*;
 import java.util.Scanner;
 
 public class CLIApplication {
@@ -27,6 +29,7 @@ public class CLIApplication {
         remoteFileHandler = new RemoteFileHandler(configHandler.getFileHandlerData(),sshManager);
         register();
         commandDispatcher = new CommandDispatcher(commandRegister);
+        SwingTextEditor.init();
     }
 
     private static void register() {
@@ -39,6 +42,7 @@ public class CLIApplication {
         commandRegister.register(finder);
         commandRegister.registerSubCommand(new FinderFolders(finder));
         commandRegister.registerSubCommand(new FinderIO(finder));
+        commandRegister.registerSubCommand(new FinderCreate(finder));
     }
 
     private static void shutdown(){

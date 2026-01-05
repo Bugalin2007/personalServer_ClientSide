@@ -34,26 +34,25 @@ public class CommandDispatcher {
         args = Arrays.copyOfRange(input, hasSubCommand ? 2 : 1, input.length);
 
         if(args.length == 1 && args[0].equals("help")) {
-            CommandHelp(command);
-            return new ExecResult(ExitStatus.SUCCESS,null,null);
+            return CommandHelp(command);
         }
 
         CommandContext context = new CommandContext(command,args);
 
         ExecResult result = command.execute(context);
         if(result.isCommandUsageProblem()){
-            CommandHelp(command);
+            return CommandHelp(command);
         }
         return result;
     }
 
-    public void CommandHelp(Command command){
+    public ExecResult CommandHelp(Command command){
         String help = "---------" +
                 command.getLiteralName() +
                 "---------\nDescription:" +
                 command.getDescription() +
                 "\nUsage:" +
                 command.getUsage();
-        System.out.println(help);
+        return new ExecResult(ExitStatus.SUCCESS,help, null);
     }
 }

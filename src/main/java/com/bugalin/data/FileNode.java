@@ -113,12 +113,15 @@ public class FileNode {
 
     private void buildTreeString(FileNode node, String prefix, boolean isLast, StringBuilder sb) {
         sb.append(prefix);
+
         if (!prefix.isEmpty()) {
             sb.append(isLast ? "└── " : "├── ");
         }
 
         sb.append(node.getFileName()).append("\n");
-
+        if (!prefix.isEmpty() && node.children.length == 0){
+            return;
+        }
         if (node.fileType == FileType.DIRECTORY && node.isContentKnown() && node.children.length > 0) {
             String childPrefix = prefix + (isLast ? "    " : "│   ");
 

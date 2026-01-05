@@ -20,6 +20,7 @@ public class FinderFolders extends AbstractSubCommand {
         if (args.length == 0) { return new ExecResult(ExitStatus.INVALID_ARGUMENT,null,"Not enough arguments");}
         switch(args[0]) {
             case "refresh" -> {
+                remoteFileHandler.refreshCurrentDir();
                 System.out.println(remoteFileHandler.display());
                 return new ExecResult(ExitStatus.SUCCESS,null,null);
             }

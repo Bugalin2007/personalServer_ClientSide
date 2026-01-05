@@ -59,6 +59,10 @@ public class RemoteFileHandler {
         return shiftFocus();
     }
 
+    public FileNode getCurrentDir(){
+        return currentDir;
+    }
+
     public ExecResult changeFocusToPath(String path){
         String name = path.split("/")[path.split("/").length-1];
         FileNode newDir = peekContent(new FileNode(path, name, true));
@@ -91,7 +95,7 @@ public class RemoteFileHandler {
         if (node.isDir()){
             FileNode result = null;
             for (FileNode child : node.getChildren()){
-                result = findFile(child.getFileName(), child);
+                result = findFile(name, child);
                 if (result != null){
                     return result;
                 }
@@ -109,13 +113,18 @@ public class RemoteFileHandler {
             return null;
         }
         String[] AnnotatedFileList = returnStuff.output().split("\n");
-        System.out.println(returnStuff.output());
+        //System.out.println(returnStuff.output());
         if(AnnotatedFileList.length == 0) {
             return fileNode;
         }
         FileNode[] children = new FileNode[AnnotatedFileList.length];
         String path = fileNode.getPath();
+        boolean isEmptyDir = true;
         for(int i = 0; i < children.length; i++) {
+            if(AnnotatedFileList[i].isEmpty()) {
+                continue;
+            }
+            isEmptyDir = false;
             char lastChar = AnnotatedFileList[i].charAt(AnnotatedFileList[i].length()-1);
             String name = AnnotatedFileList[i].substring(0,AnnotatedFileList[i].length()-1);
             switch (lastChar) {
@@ -131,7 +140,7 @@ public class RemoteFileHandler {
                 }
             }
         }
-        return fileNode.setContent(children);
+        return fileNode.setContent(isEmptyDir?new FileNode[0]:children);
     }
 
     private ExecResult shiftFocus(){
@@ -155,5 +164,10 @@ public class RemoteFileHandler {
             currentDir = peekContent(currentDir);
         }
         return new ExecResult(ExitStatus.SUCCESS,null,null);
+    }
+
+    public void refreshCurrentDir(){
+        FileNode temp = new FileNode(currentDir.getPath(), currentDir.getFileName(), true);
+        currentDir = peekContent(temp);
     }
 }
